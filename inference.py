@@ -27,12 +27,10 @@ class LungSegmentation:
 
 
     def predict(self, img_array, show = None):
-        if img_path is not None:
-            img = plt.imread(img_path)
-        assert img is not None
+        assert img_array is not None
         self.net.eval()
         with torch.no_grad():
-            img_tensor = self.preprocess(img)
+            img_tensor = self.preprocess(img_array)
             outputs = self.net(img_tensor)
         predicts = self.posprocess(outputs)
         return predicts
