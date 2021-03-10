@@ -5,6 +5,7 @@ from torchvision import transforms
 import albumentations
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
 class LungSegmentation:
     def __init__(self, checkpoint_path,
