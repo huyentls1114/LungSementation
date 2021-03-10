@@ -4,6 +4,7 @@ import torch
 from torchvision import transforms
 import albumentations
 import matplotlib.pyplot as plt
+import numpy as np
 
 class LungSegmentation:
     def __init__(self, checkpoint_path,
