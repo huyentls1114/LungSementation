@@ -1,6 +1,6 @@
-.vscode
+# .vscode
 checkpoint
-*/__pycache__/*
-.ipynb_checkpoints
-.vscode
-__pycache__
+# */__pycache__/*
+# .ipynb_checkpoints
+# .vscode
+# __pycache__
