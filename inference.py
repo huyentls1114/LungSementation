@@ -1,5 +1,5 @@
 from model.enet import ENet
-from attention_block import SENet, CBAM, SelfAttentionBlock
+from model.attention_block import SENet, CBAM, SelfAttentionBlock
 import torch
 from torchvision import transforms
 import albumentations
