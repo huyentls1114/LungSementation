@@ -42,7 +42,11 @@ class LungSegmentation:
         return predicts
 
     def preprocess(self, img):
-        self.org_w, self.org_h, _ = img.shape
+        self.org_w, self.org_h = img.shape[:2]
+        if len(img.shape) == 2:
+            img = np.dstack([img,]*3)
+        elif len(img.shape) == 3:
+            img = img[:,:,:3]
         img_tensor = self.transform_test(img)
         img_tensor = img_tensor.to(self.device)
         img_tensor = img_tensor[None, :, :, :]
