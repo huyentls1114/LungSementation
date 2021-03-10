@@ -61,9 +61,17 @@ class LungSegmentation:
         predicts = cv2.resize(predicts, (self.org_h, self.org_w))
         return predicts
 
-    def visualize(self, img_array, predicts):
-        img = img_array[:,:,0]/255.0
-        plt.imshow(np.hstack((img, predicts)), cmap = "gray")
+    def visualize(self, img_array, mask):
+        if len(img.shape) == 2:
+            img = np.dstack([img,]*3)
+        elif len(img.shape) == 3:
+            img = img[:,:,:3]
+        img = img_array/255
+        mask = msk[...,None]
+        color_mask = np.array([0.2*msk, 0.5*msk, 0.85*msk])
+        color_mask = np.transpose(color_mask, (1,2,0))
+        blend = 0.3*color_mask + 0.7*img*mask + (1 - mask)*img
+        plt.imshow(blend)
         plt.show()
 
     def load_checkpoints(self, checkpoint_path):
