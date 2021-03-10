@@ -14,7 +14,8 @@ import cv2
 class LungSegmentation:
     def __init__(self, checkpoint_path,
                        image_size = 320,
-                       device='cuda:0' if torch.cuda.is_available() else 'cpu'):
+                       device='cuda:0' if torch.cuda.is_available() else 'cpu',
+                       threshold = 0.2):
         self.device = device
         
         #load model, checkpoint
@@ -31,6 +32,7 @@ class LungSegmentation:
             transforms.Resize((image_size, image_size))
         ])
         self.image_size = image_size
+        self.threshold = threshold
 
 
     def predict(self, img_array, show = None):
@@ -38,7 +40,7 @@ class LungSegmentation:
         with torch.no_grad():
             img_tensor = self.preprocess(img_array)
             outputs = self.model(img_tensor)
-        predicts = self.posprocess(outputs)
+        predicts = self.posprocess(outputs, self.threshold)
         return predicts
 
     def preprocess(self, img):
@@ -52,7 +54,7 @@ class LungSegmentation:
         img_tensor = img_tensor[None, :, :, :]
         return img_tensor
 
-    def posprocess(self, outputs, threshold = 0.5):
+    def posprocess(self, outputs, threshold = 0.2):
         if isinstance(outputs, list):
             outputs = outputs[-1]
         predicts = torch.sigmoid(outputs)[0]
