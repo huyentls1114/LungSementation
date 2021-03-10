@@ -58,7 +58,7 @@ class LungSegmentation:
         return predicts
 
     def visualize(self, img_array, predicts):
-        img = cv2.resize(img_array[:,:,0])/255.0
+        img = img_array[:,:,0]/255.0
         plt.imshow(np.hstack((img, predicts)), cmap = "gray")
         plt.show()
 
