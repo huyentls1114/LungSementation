@@ -62,10 +62,10 @@ class LungSegmentation:
         return predicts
 
     def visualize(self, img_array, mask):
-        if len(img.shape) == 2:
-            img = np.dstack([img,]*3)
-        elif len(img.shape) == 3:
-            img = img[:,:,:3]
+        if len(img_array.shape) == 2:
+            img_array = np.dstack([img_array,]*3)
+        elif len(img_array.shape) == 3:
+            img_array = img_array[:,:,:3]
         img = img_array/255
         mask = msk[...,None]
         color_mask = np.array([0.2*msk, 0.5*msk, 0.85*msk])
