@@ -67,8 +67,8 @@ class LungSegmentation:
         elif len(img_array.shape) == 3:
             img_array = img_array[:,:,:3]
         img = img_array/255
-        mask = msk[...,None]
-        color_mask = np.array([0.2*msk, 0.5*msk, 0.85*msk])
+        mask = mask[...,None]
+        color_mask = np.array([0.2*mask, 0.5*mask, 0.85*mask])
         color_mask = np.transpose(color_mask, (1,2,0))
         blend = 0.3*color_mask + 0.7*img*mask + (1 - mask)*img
         plt.imshow(blend)
