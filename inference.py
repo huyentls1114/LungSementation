@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 from model.enet import ENet
 from model.attention_block import SENet, CBAM, SelfAttentionBlock
 import torch
@@ -6,6 +9,7 @@ import albumentations
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+
 
 class LungSegmentation:
     def __init__(self, checkpoint_path,
@@ -26,6 +30,7 @@ class LungSegmentation:
             transforms.Normalize(mean = (0.540,0.540,0.540), std = (0.264,0.264,0.264)),
             transforms.Resize((image_size, image_size))
         ])
+        self.image_size = image_size
 
 
     def predict(self, img_array, show = None):
@@ -53,7 +58,7 @@ class LungSegmentation:
         return predicts
 
     def visualize(self, img_array, predicts):
-        img = cv2.resize(img[:,:,0],(self.image_size, self.image_size))/255.0
+        img = cv2.resize(img_array[:,:,0],(self.image_size, self.image_size))/255.0
         plt.imshow(np.hstack((img, predicts)), cmap = "gray")
         plt.show()
 
@@ -64,8 +69,8 @@ class LungSegmentation:
 
 
 if __name__ == "__main__":
-    segments = LungSegmentation(checkpoint_path = "checkpoint\SE_checkpoint_889", device="cpu")
-    img_array = plt.imread("images\7aa6611b60c2e6115fdcdb7194e1f2_jumbo.jpg")
+    segments = LungSegmentation(checkpoint_path = "checkpoint/SE_checkpoint_889", device="cpu")
+    img_array = plt.imread("images/7aa6611b60c2e6115fdcdb7194e1f2_jumbo.jpg")
     predict = segments.predict(img_array)
     segments.visualize(img_array, predict)
 
