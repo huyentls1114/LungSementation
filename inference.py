@@ -58,7 +58,7 @@ class LungSegmentation:
         plt.imshow(np.hstack((img, predicts)), cmap = "gray")
         plt.show()
 
-    def load_checkpoints(checkpoint_path):
+    def load_checkpoints(self, checkpoint_path):
         assert self.model is not None
         state_dict = torch.load(checkpoint_path, map_location=self.device)
         self.model.load_state_dict(state_dict["net"])
