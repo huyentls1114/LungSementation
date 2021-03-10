@@ -61,14 +61,14 @@ class LungSegmentation:
         predicts = cv2.resize(predicts, (self.org_h, self.org_w))
         return predicts
 
-    def visualize(self, img_array, mask):
+    def visualize(self, img_array, msk):
         if len(img_array.shape) == 2:
             img_array = np.dstack([img_array,]*3)
         elif len(img_array.shape) == 3:
             img_array = img_array[:,:,:3]
         img = img_array/255
-        mask = mask[...,None]
-        color_mask = np.array([0.2*mask, 0.5*mask, 0.85*mask])
+        mask = msk[...,None]
+        color_mask = np.array([0.2*msk, 0.5*msk, 0.85*msk])
         color_mask = np.transpose(color_mask, (1,2,0))
         blend = 0.3*color_mask + 0.7*img*mask + (1 - mask)*img
         plt.imshow(blend)
