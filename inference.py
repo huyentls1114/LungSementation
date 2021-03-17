@@ -35,7 +35,7 @@ class LungSegmentation:
         self.threshold = threshold
 
 
-    def predict(self, img_array, show = None):
+    def predict(self, img_array):
         assert img_array is not None
         with torch.no_grad():
             img_tensor = self.preprocess(img_array)
@@ -43,12 +43,14 @@ class LungSegmentation:
         predicts = self.posprocess(outputs, self.threshold)
         return predicts
 
+
     def preprocess(self, img):
-        self.org_w, self.org_h = img.shape[:2]
+        self.org_h, self.org_w = img.shape[:2]
         if len(img.shape) == 2:
             img = np.dstack([img,]*3)
         elif len(img.shape) == 3:
             img = img[:,:,:3]
+        img = center_crop(img)
         img_tensor = self.transform_test(img)
         img_tensor = img_tensor.to(self.device)
         img_tensor = img_tensor[None, :, :, :]
@@ -60,7 +62,7 @@ class LungSegmentation:
         predicts = torch.sigmoid(outputs)[0]
         predicts = predicts.cpu().numpy().transpose(1, 2, 0)[:,:,0]
         predicts = (predicts > threshold).astype(np.uint8)
-        predicts = cv2.resize(predicts, (self.org_h, self.org_w))
+        predicts = revert_origin_size(predicts, self.org_h, self.org_w)
         return predicts
 
     def visualize(self, img_array, msk):
@@ -68,11 +70,15 @@ class LungSegmentation:
             img_array = np.dstack([img_array,]*3)
         elif len(img_array.shape) == 3:
             img_array = img_array[:,:,:3]
-        img = img_array/255
+        if img_array.dtype == 'uint8':
+            img = img_array/255
+        else:
+            img = img_array
         mask = msk[...,None]
         color_mask = np.array([0.2*msk, 0.5*msk, 0.85*msk])
         color_mask = np.transpose(color_mask, (1,2,0))
         blend = 0.3*color_mask + 0.7*img*mask + (1 - mask)*img
+        plt.figure(figsize=(10,10))
         plt.imshow(blend)
         plt.show()
 
@@ -104,3 +110,39 @@ def init_model(model_name):
     else:
         model = None
     return model
+
+def center_crop(image):
+    #assum w>>h
+    h_origin, w_origin = image.shape[:2]
+
+    if w_origin > h_origin:
+        w_1 = int(w_origin//2 - h_origin//2)
+        w_2 = int(w_origin//2 + h_origin//2)
+        return image[:, w_1: w_2] 
+    else:
+        h_1 = int(h_origin//2 - w_origin//2)
+        h_2 = int(h_origin//2 + w_origin//2)
+        return image[h_1: h_2, :] 
+def revert_origin_size(img, h, w):
+    min_size = min(h, w)
+    img = cv2.resize(img, (min_size, min_size))
+    if h > min_size:
+        pad_top = (h-min_size)//2
+        pad_bot = h - min_size - pad_top
+        pad_left = 0
+        pad_right = 0
+    elif w > min_size:
+        pad_top = 0 
+        pad_bot = 0 
+        pad_left = (w-min_size)//2
+        pad_right = w - min_size - pad_top
+    else:
+        pad_top = 0
+        pad_bot = 0
+        pad_left = 0
+        pad_right = 0
+    img = cv2.copyMakeBorder(img, pad_top, pad_bot, pad_left, pad_right, value=0, borderType=cv2.BORDER_CONSTANT)
+    return img
+
+
+
