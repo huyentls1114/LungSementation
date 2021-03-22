@@ -135,7 +135,7 @@ def revert_origin_size(img, h, w):
         pad_top = 0 
         pad_bot = 0 
         pad_left = (w-min_size)//2
-        pad_right = w - min_size - pad_top
+        pad_right = w - min_size - pad_left
     else:
         pad_top = 0
         pad_bot = 0
